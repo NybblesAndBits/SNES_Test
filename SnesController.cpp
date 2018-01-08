@@ -1,20 +1,87 @@
-#include "SNES.h"
+#include "SnesController.h"
 #include "Arduino.h"
 
-SNES::SNES(int clk, int latch, int data) {
-  this->clk = clk;
-  this->latch = latch;
-  this->data = data;
-
-  pinMode(clk, OUTPUT);
-  pinMode(latch, OUTPUT);
-  pinMode(data, INPUT);
-
-  for (int i = 0; i < 12; i++) lastTimes[i] = 0;
-  rawRefresh();
-  currState = getRawState();
-  lastState = currState;
+//=============================================================================
+SnesController::SnesController(uint8_t clock, uint8_t latch, uint8_t data) {
+	
+	// Store the pins.
+	this->clock = clock;
+	this->latch = latch;
+	this->data  = data;
+	
+	// Set data direction.
+	pinMode(clock, OUTPUT);
+	pinMode(latch, OUTPUT);
+	pinMode(data, INPUT);
+	
+	// Default output states.
+	digitalWrite(clock, LOW);
+	digitalWrite(latch, LOW);
+	
+	// Default internal variable states.
+	state = getRawState();
+    change = 0;
+	pollTime = 0;
+	for (uint8_t i=0; i<BUTTON_COUNT; i++) changeTimes[i] = 0;
 }
+
+//=============================================================================
+uint16_t SnesController::getRawState() {
+	
+	uint16_t rawState = 0;
+	uint16_t mask = 0x0800;
+	
+	// Latch the controller button data.
+	digitalWrite(latch, HIGH);
+	digitalWrite(latch, LOW);
+	
+	// Clock in all twelve buttons
+	for (uint8_t i=0; i<BUTTON_COUNT; i++) {
+		
+		// Read in a single bit.
+		if (digitalRead(data)) rawState |= mask;
+
+		// Shift the mask left
+		mask >>= 1;
+		
+		// Clock
+		digitalWrite(clk, HIGH);
+		digitalWrite(clk, LOW);
+	}
+	
+	return rawState;	
+}
+
+//=============================================================================
+void SnesController::poll() {
+	
+}
+
+//=============================================================================
+bool SnesController::isPressed(uint16_t buttonMask) {
+	
+}
+
+//=============================================================================
+bool SnesController::wasPressed(uint16_t buttonMask) {
+	
+}
+
+//=============================================================================
+bool SnesController::wasReleased(uint16_t buttonMask) {
+	
+}
+
+//=============================================================================
+uint32_t getHeldTime(uint16_t buttonMask) {
+	
+}
+
+
+
+
+
+
 
 void SNES::rawRefresh() {
   int mask = 0b100000000000;

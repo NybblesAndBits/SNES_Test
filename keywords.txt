@@ -1,0 +1,34 @@
+###############################################################################
+# Syntax Coloring Map For SnesController.
+###############################################################################
+
+#==============================================================================
+# Datatypes (KEYWORD1)
+#==============================================================================
+SnesController  KEYWORD1
+
+#==============================================================================
+# Methods and Functions (KEYWORD2)
+#==============================================================================
+poll            KEYWORD2
+getRawState     KEYWORD2
+isPressed       KEYWORD2
+wasPressed      KEYWORD2
+wasReleased     KEYWORD2
+getHeldTime     KEYWORD2
+
+#==============================================================================
+# Constants (LITERAL1)
+#==============================================================================
+START           LITERAL1
+SELECT          LITERAL1
+UP              LITERAL1
+DOWN            LITERAL1
+LEFT            LITERAL1
+RIGHT           LITERAL1
+A               LITERAL1
+B               LITERAL1
+X               LITERAL1
+Y               LITERAL1
+L               LITERAL1
+R               LITERAL1
