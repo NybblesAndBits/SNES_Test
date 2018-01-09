@@ -48,8 +48,6 @@ private:
 	uint32_t pollTime;
     uint32_t changeTimes[BUTTON_COUNT];   
 
-	uint16_t getIn
-
 public:
 	//=========================================================================
 	// Constructor that accepts the pins for clocking, latching, and data input.
