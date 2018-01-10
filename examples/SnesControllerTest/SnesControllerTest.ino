@@ -8,7 +8,7 @@ const uint8_t DATA  = 12;
 // Create a SnesController object
 SnesController snes(CLOCK, LATCH, DATA);
 
-// Some variables to limit the print 
+// Some variables to limit the print
 // interval when performing the hold test.
 int heldCount = 0;
 uint32_t heldInterval = 500;
@@ -22,7 +22,7 @@ void setup() {
 //=============================================================================
 // This function repeats forever.
 void loop() {
-	
+
 	// Poll is called to read the state of the controller.
 	snes.poll();
 
@@ -33,7 +33,7 @@ void loop() {
 	if(snes.isPressed(SnesController::START)) {
 		Serial.println("Start is pressed.");
 	}
-	
+
 	// The wasPressed() function can be used to detect
 	// if a button was just pressed. This function will
 	// only return true when a button was not pressed
@@ -41,7 +41,7 @@ void loop() {
 	if(snes.wasPressed(SnesController::A)) {
 		Serial.println("A was pressed.");
 	}
-	
+
 	// The wasReleased() function can be used to detect
 	// if a button was just released. This works the
 	// same way as the wasPressed() function but only
@@ -50,7 +50,7 @@ void loop() {
 	if(snes.wasReleased(SnesController::A)) {
 		Serial.println("A was released.");
 	}
-	
+
 	// The getHeldTime() function can be used to check
 	// how long a button has been held down in ms.
 	uint32_t nextInterval = heldCount * heldInterval;
@@ -60,9 +60,9 @@ void loop() {
 		Serial.println(" ms.");
 		heldCount++;
 	}
-	
+
 	// Reset the held count if R was released.
 	if(snes.wasReleased(SnesController::R)) {
 		heldCount = 0;
-	}	
+	}
 }
