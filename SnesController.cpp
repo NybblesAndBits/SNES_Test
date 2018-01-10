@@ -14,7 +14,7 @@ SnesController::SnesController(uint8_t clock, uint8_t latch, uint8_t data) {
   pinMode(data, INPUT);
 
   // Default output states.
-  digitalWrite(clock, HIGH);
+  digitalWrite(clock, LOW);
   digitalWrite(latch, LOW);
 
   // Default internal variable states.
