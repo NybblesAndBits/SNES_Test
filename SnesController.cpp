@@ -14,11 +14,11 @@ SnesController::SnesController(uint8_t clock, uint8_t latch, uint8_t data) {
   pinMode(data, INPUT);
 
   // Default output states.
-  digitalWrite(clock, LOW);
+  digitalWrite(clock, HIGH);
   digitalWrite(latch, LOW);
 
   // Default internal variable states.
-  state = getRawState();
+  state = ~getRawState();
   change = 0;
   pollTime = 0;
   for (uint8_t i=0; i<BUTTON_COUNT; i++) changeTimes[i] = 0;
@@ -43,8 +43,8 @@ uint16_t SnesController::getRawState() {
     mask >>= 1;
 
     // Clock
-    digitalWrite(clk, HIGH);
-    digitalWrite(clk, LOW);
+    digitalWrite(clock, HIGH);
+    digitalWrite(clock, LOW);
   }
 
   return rawState;
@@ -59,52 +59,52 @@ void SnesController::poll() {
   // Latch the controller button data.
   digitalWrite(latch, HIGH);
   digitalWrite(latch, LOW);
-  pollTime = mills();
+  pollTime = millis();
 
   // Clock in all twelve buttons
   for (uint8_t i=0; i<BUTTON_COUNT; i++) {
 
     // Read in a single bit.
-    if (digitalRead(data)) newState |= mask;
+    if (digitalRead(data) == LOW) newState |= mask;
 
     // if newState[bit] != state[bit]
     if((newState ^ state) & mask) {
-      if(pollTime - changeTime[SNES_CONTROLLER_MASK2INDEX(mask)] > BOUNCE_TIME) {
-        state |= newState & mask;
+      if(pollTime - changeTimes[i] > BOUNCE_TIME) {
+        state ^= mask;
         change |= mask;
-        changeTime[SNES_CONTROLLER_MASK2INDEX(mask)] = pollTime;
+        changeTimes[i] = pollTime;
       }
     }
 
-    // Shift the mask left
+    // Shift the mask right
     mask >>= 1;
 
     // Clock
-    digitalWrite(clk, HIGH);
-    digitalWrite(clk, LOW);
+    digitalWrite(clock, HIGH);
+    digitalWrite(clock, LOW);
   }
 }
 
 //=============================================================================
 bool SnesController::isPressed(uint16_t buttonMask) {
-  return (state & buttonMask);
+  return (state & buttonMask & 0x0FFF);
 }
 
 //=============================================================================
 bool SnesController::wasPressed(uint16_t buttonMask) {
-  return (change & buttonMask) && (state & buttonMask);
+  return (change & buttonMask & 0x0FFF) && (state & buttonMask & 0x0FFF);
 }
 
 //=============================================================================
 bool SnesController::wasReleased(uint16_t buttonMask) {
-  return (change & buttonMask) && ((~state) & buttonMask);
+  return (change & buttonMask & 0x0FFF) && ((~state) & buttonMask & 0x0FFF);
 }
 
 //=============================================================================
-uint32_t getHeldTime(uint16_t buttonMask) {
+uint32_t SnesController::getHeldTime(uint16_t buttonMask) {
   if(SNES_CONTROLLER_MASK2INDEX(buttonMask) < BUTTON_COUNT) {
-    if(state & mask) {
-      return pollTime - changeTime[SNES_CONTROLLER_MASK2INDEX(buttonMask)];
+    if(state & buttonMask & 0x0FFF) {
+      return pollTime - changeTimes[SNES_CONTROLLER_MASK2INDEX(buttonMask)];
     }
   }
   return 0;

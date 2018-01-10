@@ -1,17 +1,17 @@
 #include "SnesController.h"
 
 // Pin definitions
-const uint8_t CLOCK = 10;
+const uint8_t CLOCK = 12;
 const uint8_t LATCH = 11;
-const uint8_t DATA  = 12;
+const uint8_t DATA  = 10;
 
 // Create a SnesController object
 SnesController snes(CLOCK, LATCH, DATA);
 
 // Some variables to limit the print
 // interval when performing the hold test.
-int heldCount = 0;
-uint32_t heldInterval = 500;
+int heldCount = 1;
+uint32_t heldInterval = 1000;
 
 //=============================================================================
 // This function runs once during startup.
@@ -55,13 +55,13 @@ void loop() {
   uint32_t nextInterval = heldCount * heldInterval;
   if(snes.getHeldTime(SnesController::R) > nextInterval) {
     Serial.print("R has been held for ");
-    Serial.print(nextInterval)
+    Serial.print(nextInterval);
     Serial.println(" ms.");
     heldCount++;
   }
 
-  // Reset the held count if R was released.
+  // Reset the held count when R is released.
   if(snes.wasReleased(SnesController::R)) {
-    heldCount = 0;
+    heldCount = 1;
   }
 }
